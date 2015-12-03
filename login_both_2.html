@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--   http://eundervisning-wp.dk/objekter/kemiC_visningsite/  -->
+    <title>Are you logged in?</title>
+    <!-- http://www.robotstxt.org/meta.html -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google-signin-client_id" content="3726567901-5fadcrkvpg7fahggmmie7gdsesgrgtr4.apps.googleusercontent.com">
+    <link rel="stylesheet" href="../library/css/styles.css" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+
+<body>
+    <!--
+FACEBOOK LOGIN HTML
+ -->
+    <div class="col-xs-6 fb_col">
+    </div>
+    <!--
+GOOGLE LOGIN HTML
+ -->
+    <div class="col-xs-6 google_col">
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    </div>
+</body>
+<script>
+function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log('Name: ' + profile.getName());
+    console.log('Image URL: ' + profile.getImageUrl());
+    console.log('Email: ' + profile.getEmail());
+    $(".google_col").append("<p>Du er logget på Google som:  " + profile.getName() + "</p><img src='" + profile.getImageUrl() + "'>");
+}
+
+
+//FACEBOOK LOGIN
+
+fbAsyncInit = function() {
+    FB.init({
+        appId: '189725771360359',
+        xfbml: true,
+        status: true,
+        version: 'v2.5'
+    });
+    FB.getLoginStatus(function(response) {
+        if (response.status === 'connected') {
+            console.log("Du er logget ind..")
+                // the user is logged in and has authenticated your
+                // app, and response.authResponse supplies
+                // the user's ID, a valid access token, a signed
+                // request, and the time the access token 
+                // and signed request each expire
+            var uid = response.authResponse.userID;
+            var accessToken = response.authResponse.accessToken;
+
+            $(".fb_col").append('<p>Du er logget på via facebook som ' + uid + '.</p>');
+
+            //Kan ikke få fat i: response.name
+
+
+        } else if (response.status === 'not_authorized') {
+
+
+            //var uid = response.authResponse.userID;
+            //  var accessToken = response.authResponse.accessToken;
+            // the user is logged in to Facebook, 
+            // but has not authenticated your app
+            console.log("Du er logget ind (u/ auth.. : uid = " + accessToken)
+            make_fb_login_btn();
+        } else {
+            // the user isn't logged in to Facebook.
+            console.log("Du er ikke logget ind..")
+            make_fb_login_btn();
+        }
+    });
+
+};
+
+(function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }
+    (document, 'script', 'facebook-jssdk'));
+
+
+function make_fb_login_btn() {
+    $(".fb_col").append("<div class='fb_login_btn'>Login med facebook</div>")
+    $(".fb_login_btn").click(function() {
+        console.log("clicked_loginbtn");
+        bring_up_fb_login_box();
+    });
+}
+
+function bring_up_fb_login_box() {
+    FB.login(function(response) {
+        console.log("FB");
+        if (response.authResponse) {
+            console.log('Welcome!  Fetching your information.... ');
+            FB.api('/me', function(response) {
+                console.log('Good to see you, ' + response.name + '.');
+                $(".fb_col").append('<p>Du er logget på via facebook som ' + response.name + '.</p>');
+                $("fb_login_btn").hide();
+                var facebookid = response.id;
+            });
+        } else {
+            console.log('User cancelled login or did not fully authorize.');
+        }
+    });
+}
+/// END OF FACEBOOK LOGIN
+</script>
+
+</html>

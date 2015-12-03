@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--   http://eundervisning-wp.dk/objekter/kemiC_visningsite/  -->
+    <title>Are you logged in?</title>
+    <!-- http://www.robotstxt.org/meta.html -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../library/css/styles.css" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+</head>
+
+<body>      
+    <div class="login">Login med facebook</div>
+</body>
+<script>
+
+//FACEBOOK LOGIN
+$(".login").click(function() {
+    
+    fbAsyncInit = function() {
+        FB.init({
+            appId: '189725771360359',
+            xfbml: true,
+            status: true,
+            version: 'v2.5'
+        });
+        FB.getLoginStatus(function(response) {
+            if (response.status === 'connected') {
+                console.log("Du er logget ind..")
+                    // the user is logged in and has authenticated your
+                    // app, and response.authResponse supplies
+                    // the user's ID, a valid access token, a signed
+                    // request, and the time the access token 
+                    // and signed request each expire
+                var uid = response.authResponse.userID;
+                var accessToken = response.authResponse.accessToken;
+            } else if (response.status === 'not_authorized') {
+                //var uid = response.authResponse.userID;
+                //  var accessToken = response.authResponse.accessToken;
+                // the user is logged in to Facebook, 
+                // but has not authenticated your app
+                console.log("Du er logget ind (u/ auth.. : uid = " + accessToken)
+            } else {
+                // the user isn't logged in to Facebook.
+                console.log("Du er ikke logget ind..")
+            }
+        });
+        FB.login(function(response) {
+            console.log("FB");
+            if (response.authResponse) {
+                console.log('Welcome!  Fetching your information.... ');
+                FB.api('/me', function(response) {
+                    console.log('Good to see you, ' + response.name + '.');
+                    $("body").append('<h1>Good to see you, ' + response.name + '.</h1> Dit ID er: ' + response.id);
+                });
+            } else {
+                console.log('User cancelled login or did not fully authorize.');
+            }
+        });
+    };
+
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+});
+/// END OF FACEBOOK LOGIN 
+
+</script>
+
+</html>
